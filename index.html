@@ -4,128 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ParkBuddy Slot Status</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #191919;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .container {
-            text-align: center;
-            background-color: #393939;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        h1,h2 {
-            color: #e1e1e1;
-        }
-
-        .status {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-
-        .slot, .gate {
-            width: 150px;
-            padding: 20px;
-            margin-right: 5px;
-            border-radius: 10px;
-            background-color: #595959;
-        }
-
-        .slot h2, .gate h2 {
-            margin-bottom: 10px;
-        }
-
         .status-box {
             padding: 10px;
             color: white;
             border-radius: 5px;
         }
-
         .status-box.occupied {
             background-color: #e74c3c;
         }
-
         .status-box.free {
             background-color: #2ecc71;
         }
-
         .status-box.open {
             background-color: #3498db;
         }
-
         .status-box.closed {
             background-color: #95a5a6;
         }
-
-        .gate .status-box{
-            background-color: #3498db;
-        }
-
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
-        }
-
         .datetime-picker {
-            margin-top: 10px;
+            display: none;
         }
     </style>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
-    <!-- Flatpickr Date-Time Picker -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>ParkBuddy🚗 Slot & Gate Status</h1>
-        <div class="status">
+<body class="bg-gray-900 flex items-center justify-center min-h-screen">
+
+    <div class="container bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-screen-lg">
+        <h1 class="text-white text-3xl text-center font-bold mb-6">ParkBuddy🚗 Slot & Gate Status</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Slot 1 -->
-            <div class="slot">
-                <h2>Slot 1</h2>
-                <div id="slot1-status" class="status-box">Loading...</div>
-                <input type="text" id="slot1-datetime" class="datetime-picker" placeholder="Select Date & Time" />
-                <button id="slot1-book-btn" disabled>Book Slot</button>
+            <div class="slot bg-gray-700 p-4 rounded-lg text-center">
+                <h2 class="text-xl text-white mb-4">Slot 1</h2>
+                <div id="slot1-status" class="status-box mb-4">Loading...</div>
+                <input type="text" id="slot1-datetime" class="datetime-picker w-full px-2 py-1 rounded-md mb-4" placeholder="Select Date & Time" />
+                <button id="slot1-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full">Book Slot</button>
             </div>
             <!-- Slot 2 -->
-            <div class="slot">
-                <h2>Slot 2</h2>
-                <div id="slot2-status" class="status-box">Loading...</div>
-                <input type="text" id="slot2-datetime" class="datetime-picker" placeholder="Select Date & Time" />
-                <button id="slot2-book-btn" disabled>Book Slot</button>
+            <div class="slot bg-gray-700 p-4 rounded-lg text-center">
+                <h2 class="text-xl text-white mb-4">Slot 2</h2>
+                <div id="slot2-status" class="status-box mb-4">Loading...</div>
+                <input type="text" id="slot2-datetime" class="datetime-picker w-full px-2 py-1 rounded-md mb-4" placeholder="Select Date & Time" />
+                <button id="slot2-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full">Book Slot</button>
             </div>
             <!-- Slot 3 -->
-            <div class="slot">
-                <h2>Slot 3</h2>
-                <div id="slot3-status" class="status-box">Loading...</div>
-                <input type="text" id="slot3-datetime" class="datetime-picker" placeholder="Select Date & Time" />
-                <button id="slot3-book-btn" disabled>Book Slot</button>
+            <div class="slot bg-gray-700 p-4 rounded-lg text-center">
+                <h2 class="text-xl text-white mb-4">Slot 3</h2>
+                <div id="slot3-status" class="status-box mb-4">Loading...</div>
+                <input type="text" id="slot3-datetime" class="datetime-picker w-full px-2 py-1 rounded-md mb-4" placeholder="Select Date & Time" />
+                <button id="slot3-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full">Book Slot</button>
             </div>
             <!-- Gate Status -->
-            <div class="gate">
-                <h2>Gate</h2>
+            <div class="gate bg-gray-700 p-4 rounded-lg text-center">
+                <h2 class="text-xl text-white mb-4">Gate</h2>
                 <div id="gate-status" class="status-box">Loading...</div>
             </div>
         </div>
@@ -134,12 +69,12 @@
     <script>
         // Firebase configuration
         var firebaseConfig = {
-            apiKey: "AIzaSyAKwQcf9dQcRsRCj43MPBod1GBXz4xvtJ8",
-            authDomain: "parkbuddy-653a1.firebaseapp.com",
-            databaseURL: "https://parkbuddy-653a1-default-rtdb.firebaseio.com",
-            projectId: "parkbuddy-653a1",
-            storageBucket: "parkbuddy-653a1.appspot.com",
-            messagingSenderId: "171935755007",
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
             appId: "YOUR_APP_ID"
         };
 
@@ -155,18 +90,18 @@
 
             statusBox.textContent = status;
 
-            // Update UI based on the slot status
             if (status.toLowerCase() === "free") {
                 statusBox.classList.add('free');
                 statusBox.classList.remove('occupied');
                 bookBtn.disabled = false;
+
                 bookBtn.addEventListener("click", function() {
+                    datetimeInput.style.display = 'block';
                     flatpickr(`#${slotId}-datetime`, {
                         enableTime: true,
                         dateFormat: "Y-m-d H:i",
                         minDate: "today",
                         onChange: function(selectedDates, dateStr) {
-                            // Handle booking logic here
                             bookSlot(slotId, dateStr);
                         }
                     });
@@ -175,10 +110,10 @@
                 statusBox.classList.add('occupied');
                 statusBox.classList.remove('free');
                 bookBtn.disabled = true;
+                datetimeInput.style.display = 'none';
             }
         }
 
-        // Function to handle booking a slot
         function bookSlot(slotId, dateStr) {
             const slotRef = database.ref(`parking_space/${slotId}/booking`);
             slotRef.set({
@@ -188,22 +123,18 @@
             alert(`Slot ${slotId} booked for ${dateStr}`);
         }
 
-        // Slot 1 status
         database.ref("parking_space/slot1/status").on("value", function(snapshot) {
             updateSlotAvailability("slot1", snapshot.val());
         });
 
-        // Slot 2 status
         database.ref("parking_space/slot2/status").on("value", function(snapshot) {
             updateSlotAvailability("slot2", snapshot.val());
         });
 
-        // Slot 3 status
         database.ref("parking_space/slot3/status").on("value", function(snapshot) {
             updateSlotAvailability("slot3", snapshot.val());
         });
 
-        // Gate status
         database.ref("parking_space/gate/status").on("value", function(snapshot) {
             const gateStatus = document.getElementById("gate-status");
             gateStatus.textContent = snapshot.val();
