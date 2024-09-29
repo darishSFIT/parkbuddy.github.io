@@ -14,7 +14,6 @@
     <style>
         body {
             background-color: #191919;
-            /* color: white; */
         }
         .status-box {
             padding: 10px;
@@ -80,21 +79,24 @@
                 <h2 class="text-xl text-white mb-4">Slot 1</h2>
                 <div id="slot1-status" class="status-box mb-4">Loading...</div>
                 <input type="text" id="slot1-datetime" class="datetime-picker w-full px-2 py-1 rounded-md mb-4" placeholder="Select Date & Time" />
-                <button id="slot1-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full">Book Slot</button>
+                <button id="slot1-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full mb-2">Book Slot</button>
+                <button id="slot1-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Booking</button>
             </div>
             <!-- Slot 2 -->
             <div class="slot bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Slot 2</h2>
                 <div id="slot2-status" class="status-box mb-4">Loading...</div>
                 <input type="text" id="slot2-datetime" class="datetime-picker w-full px-2 py-1 rounded-md mb-4" placeholder="Select Date & Time" />
-                <button id="slot2-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full">Book Slot</button>
+                <button id="slot2-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full mb-2">Book Slot</button>
+                <button id="slot2-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Booking</button>
             </div>
             <!-- Slot 3 -->
             <div class="slot bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Slot 3</h2>
                 <div id="slot3-status" class="status-box mb-4">Loading...</div>
                 <input type="text" id="slot3-datetime" class="datetime-picker w-full px-2 py-1 rounded-md mb-4" placeholder="Select Date & Time" />
-                <button id="slot3-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full">Book Slot</button>
+                <button id="slot3-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full mb-2">Book Slot</button>
+                <button id="slot3-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Booking</button>
             </div>
             <!-- Gate Status -->
             <div class="gate bg-gray-700 p-4 rounded-lg text-center">
@@ -123,6 +125,7 @@
         function updateSlotAvailability(slotId, status) {
             const statusBox = document.getElementById(`${slotId}-status`);
             const bookBtn = document.getElementById(`${slotId}-book-btn`);
+            const cancelBtn = document.getElementById(`${slotId}-cancel-btn`);
             const datetimeInput = document.getElementById(`${slotId}-datetime`);
 
             statusBox.textContent = status;
@@ -131,6 +134,9 @@
                 statusBox.classList.add('free');
                 statusBox.classList.remove('occupied');
                 bookBtn.disabled = false;
+                cancelBtn.style.display = 'none';
+                datetimeInput.style.display = 'none';
+
 
                 bookBtn.addEventListener("click", function() {
                     datetimeInput.style.display = 'block';
@@ -143,11 +149,17 @@
                         }
                     });
                 });
+
             } else {
                 statusBox.classList.add('occupied');
                 statusBox.classList.remove('free');
                 bookBtn.disabled = true;
                 datetimeInput.style.display = 'none';
+                cancelBtn.style.display = 'block';
+
+                cancelBtn.addEventListener("click", function() {
+                    cancelBooking(slotId);
+                });
             }
         }
 
@@ -158,6 +170,15 @@
                 status: "Booked"
             });
             alert(`Slot ${slotId} booked for ${dateStr}`);
+        }
+
+        function cancelBooking(slotId) {
+            const slotRef = database.ref(`parking_space/${slotId}/booking`);
+            slotRef.set({
+                date: null,
+                status: "free"
+            });
+            alert(`Slot ${slotId} booking has been canceled.`);
         }
 
         database.ref("parking_space/slot1/status").on("value", function(snapshot) {
@@ -176,11 +197,11 @@
             const gateStatus = document.getElementById("gate-status");
             gateStatus.textContent = snapshot.val();
             if (snapshot.val() === "Gate opened") {
-                gateStatus.classList.add('open');
-                gateStatus.classList.remove('closed');
+                gateStatus.classList.add("open");
+                gateStatus.classList.remove("closed");
             } else {
-                gateStatus.classList.add('closed');
-                gateStatus.classList.remove('open');
+                gateStatus.classList.add("closed");
+                gateStatus.classList.remove("open");
             }
         });
     </script>
