@@ -139,7 +139,7 @@
             const cancelBtn = document.getElementById(`${slotId}-cancel-btn`);
 
             if (status === "reserved" || status === "occupied") {
-                database.ref(`parking_space/reservations/${slotId}`).once("value", function(snapshot) {
+                database.ref(`parking_space/${slotId}/reservations/`).once("value", function(snapshot) {
                     const reservation = snapshot.val();
                     if (reservation) {
                         userReservations[slotId] = reservation; // Store the reservation details
@@ -219,10 +219,10 @@
             };
 
             // Save the reservation details to Firebase
-            database.ref(`parking_space/reservations/${currentSlot}`).set(reservationDetails);
+            database.ref(`parking_space/${slotId}/reservations/${currentSlot}`).set(reservationDetails);
 
             // Update slot status to "reserved"
-            database.ref(`parking_space/slots/${currentSlot}/status`).set("reserved");
+            database.ref(`parking_space/${currentSlot}/status`).set("reserved");
 
             closeReservationForm();
         });
@@ -236,8 +236,8 @@
             const reservation = userReservations[currentSlot];
             if (reservation && reservation.name === name && reservation.email === email) {
                 // Remove reservation and update slot status
-                database.ref(`parking_space/reservations/${currentSlot}`).remove();
-                database.ref(`parking_space/slots/${currentSlot}/status`).set("free");
+                database.ref(`parking_space/${currentSlot}/reservations/status`).remove();
+                database.ref(`parking_space/${currentSlot}/status`).set("free");
                 alert("Reservation cancelled successfully!");
             } else {
                 alert("Reservation details do not match!");
@@ -247,15 +247,15 @@
         });
 
         // Fetch the slots and gate status
-        database.ref("parking_space/slots/slot1/status").on("value", function(snapshot) {
+        database.ref("parking_space/slot1/status").on("value", function(snapshot) {
             updateSlotAvailability('slot1', snapshot.val());
         });
 
-        database.ref("parking_space/slots/slot2/status").on("value", function(snapshot) {
+        database.ref("parking_space/slot2/status").on("value", function(snapshot) {
             updateSlotAvailability('slot2', snapshot.val());
         });
 
-        database.ref("parking_space/slots/slot3/status").on("value", function(snapshot) {
+        database.ref("parking_space/slot3/status").on("value", function(snapshot) {
             updateSlotAvailability('slot3', snapshot.val());
         });
 
