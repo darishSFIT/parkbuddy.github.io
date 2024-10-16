@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,30 +16,59 @@
         body {
             background-color: #191919;
         }
+
         .status-box {
             padding: 10px;
             color: white;
             border-radius: 5px;
         }
-        .status-box.occupied { background-color: #e74c3c; }
-        .status-box.free { background-color: #2ecc71; }
-        .status-box.reserved { background-color: #3498db; }
-        .status-box.closed { background-color: #95a5a6; }
-        button, .status-box, .slot, .gate {
+
+        .status-box.occupied {
+            background-color: #e74c3c;
+        }
+
+        .status-box.free {
+            background-color: #2ecc71;
+        }
+
+        .status-box.reserved {
+            background-color: #3498db;
+        }
+
+        .status-box.loading {
+            background-color: #95a5a6;
+        }
+
+        button,
+        .status-box,
+        .slot,
+        .gate {
             transition: 500ms;
         }
-        button:hover, .slot:hover, .gate:hover {
+
+        button:hover,
+        .slot:hover,
+        .gate:hover {
             transform: scale(1.02);
             opacity: 0.8;
         }
-        .status-box:hover { opacity: 0.8; }
-        .slot:hover, .gate:hover { border-radius: 15px; }
+
+        .status-box:hover {
+            opacity: 0.8;
+        }
+
+        .slot:hover,
+        .gate:hover {
+            border-radius: 15px;
+        }
+
         /* Modal styling */
         #modal-overlay {
             background-color: rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
+
 <body class="bg-gray-900 flex items-center justify-center min-h-screen p-4">
 
     <div class="container bg-gray-800 p-4 sm:p-8 rounded-lg shadow-lg w-full max-w-screen-lg">
@@ -48,28 +78,34 @@
             <!-- Slot 1 -->
             <div class="slot bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Slot 1</h2>
-                <div id="slot1-status" class="status-box mb-4">Loading...</div>
-                <button id="slot1-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve Slot</button>
-                <button id="slot1-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Reservation</button>
+                <div id="slot1-status" class="status-box loading">Loading...</div>
+                <button id="slot1-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve
+                    Slot</button>
+                <button id="slot1-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel
+                    Reservation</button>
             </div>
             <!-- Slot 2 -->
             <div class="slot bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Slot 2</h2>
-                <div id="slot2-status" class="status-box mb-4">Loading...</div>
-                <button id="slot2-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve Slot</button>
-                <button id="slot2-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Reservation</button>
+                <div id="slot2-status" class="status-box loading">Loading...</div>
+                <button id="slot2-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve
+                    Slot</button>
+                <button id="slot2-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel
+                    Reservation</button>
             </div>
             <!-- Slot 3 -->
             <div class="slot bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Slot 3</h2>
-                <div id="slot3-status" class="status-box mb-4">Loading...</div>
-                <button id="slot3-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve Slot</button>
-                <button id="slot3-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Reservation</button>
+                <div id="slot3-status" class="status-box loading">Loading...</div>
+                <button id="slot3-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve
+                    Slot</button>
+                <button id="slot3-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel
+                    Reservation</button>
             </div>
             <!-- Gate Status -->
             <div class="gate bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Gate</h2>
-                <div id="gate-status" class="status-box">Loading...</div>
+                <div id="gate-status" class="status-box loading">Loading...</div>
             </div>
         </div>
     </div>
@@ -123,17 +159,23 @@
 
             if (status.toLowerCase() === "free") {
                 statusBox.classList.add('free');
-                statusBox.classList.remove('occupied', 'reserved');
+                statusBox.classList.remove('occupied', 'reserved', 'loading');
                 reserveBtn.style.display = 'block';
                 cancelBtn.style.display = 'none';
             } else if (status.toLowerCase() === "reserved") {
                 statusBox.classList.add('reserved');
-                statusBox.classList.remove('free', 'occupied');
+                statusBox.classList.remove('free', 'occupied', 'loading');
                 reserveBtn.style.display = 'none';
                 cancelBtn.style.display = 'block';
-            } else {
+            } else if (status.toLowerCase() === "occupied") {
                 statusBox.classList.add('occupied');
-                statusBox.classList.remove('free', 'reserved');
+                statusBox.classList.remove('free', 'reserved', 'loading');
+                reserveBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+            } else {
+                // Default to loading status
+                statusBox.classList.add('loading');
+                statusBox.classList.remove('free', 'reserved', 'occupied');
                 reserveBtn.style.display = 'none';
                 cancelBtn.style.display = 'none';
             }
@@ -148,15 +190,15 @@
 
         // Close reservation form
         function closeReservationForm() {
-            // Hide the modal by adding 'hidden' class
+            // Hide modal
             document.getElementById('modal-overlay').classList.add('hidden');
+            document.getElementById('user-details-form').reset(); // Reset the form
         }
 
-        // Event listener for close button
-        document.getElementById("close-modal-btn").addEventListener("click", closeReservationForm);
-
-        document.getElementById('user-details-form').addEventListener('submit', function (e) {
+        // Handle reservation form submission
+        document.getElementById("user-details-form").addEventListener("submit", function (e) {
             e.preventDefault();
+
             const name = document.getElementById('user-name').value;
             const phone = document.getElementById('user-phone').value;
             const email = document.getElementById('user-email').value;
@@ -178,19 +220,17 @@
         });
 
         // Fetch the slots and gate status
-        database.ref("slots/slot1").on("value", function(snapshot) {
-            updateSlotAvailability('slot1', snapshot.val());
+        const slots = ["slot1", "slot2", "slot3"];
+        slots.forEach(slot => {
+            // Set loading status initially
+            updateSlotAvailability(slot, "Loading...");
+
+            database.ref(`slots/${slot}`).on("value", function (snapshot) {
+                updateSlotAvailability(slot, snapshot.val());
+            });
         });
 
-        database.ref("slots/slot2").on("value", function(snapshot) {
-            updateSlotAvailability('slot2', snapshot.val());
-        });
-
-        database.ref("slots/slot3").on("value", function(snapshot) {
-            updateSlotAvailability('slot3', snapshot.val());
-        });
-
-        database.ref("gate").on("value", function(snapshot) {
+        database.ref("gate").on("value", function (snapshot) {
             document.getElementById('gate-status').textContent = snapshot.val();
         });
 
@@ -207,6 +247,9 @@
             showReservationForm("slot3");
         });
 
+        // Close modal event listener
+        document.getElementById('close-modal-btn').addEventListener('click', closeReservationForm);
     </script>
 </body>
+
 </html>
