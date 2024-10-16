@@ -20,89 +20,66 @@
             color: white;
             border-radius: 5px;
         }
-        .status-box.occupied {
-            background-color: #e74c3c;
-        }
-        .status-box.free {
-            background-color: #2ecc71;
-        }
-        .status-box.open {
-            background-color: #3498db;
-        }
-        .status-box.closed {
-            background-color: #95a5a6;
-        }
-        .datetime-picker {
-            display: none;
-        }
-        button{
+        .status-box.occupied { background-color: #e74c3c; }
+        .status-box.free { background-color: #2ecc71; }
+        .status-box.open { background-color: #3498db; }
+        .status-box.closed { background-color: #95a5a6; }
+        .datetime-picker { display: none; }
+        button, .status-box, .slot, .gate {
             transition: 500ms;
         }
-        button:hover{
+        button:hover, .slot:hover, .gate:hover {
             transform: scale(1.02);
             opacity: 0.8;
-            border-radius: 10px;
         }
-        .status-box{
-            transition: 500ms;
-        }
-        .status-box:hover{
-            opacity: 0.8;
-        }
-        .slot{
-            transition: 500ms;
-        }
-        .slot:hover{
-            transform: scale(1.02);
-            opacity: 0.9;
-            border-radius: 15px;
-        }
-        .gate{
-            transition: 500ms;
-        }
-        .gate:hover{
-            transform: scale(1.02);
-            opacity: 0.9;
-            border-radius: 15px;
-        }
-        
+        .status-box:hover { opacity: 0.8; }
+        .slot:hover, .gate:hover { border-radius: 15px; }
     </style>
 </head>
-<body class="bg-gray-900 flex items-center justify-center min-h-screen">
+<body class="bg-gray-900 flex items-center justify-center min-h-screen p-4">
 
-    <div class="container bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-screen-lg">
-        <h1 class="text-white text-3xl text-center font-bold mb-6">ParkBuddy🚗 Slot & Gate Status</h1>
+    <div class="container bg-gray-800 p-4 sm:p-8 rounded-lg shadow-lg w-full max-w-screen-lg">
+        <h1 class="text-white text-2xl sm:text-3xl text-center font-bold mb-6">ParkBuddy🚗 Slot & Gate Status</h1>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <!-- Slot 1 -->
             <div class="slot bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Slot 1</h2>
                 <div id="slot1-status" class="status-box mb-4">Loading...</div>
-                <input type="text" id="slot1-datetime" class="datetime-picker w-full px-2 py-1 rounded-md mb-4" placeholder="Select Date & Time" />
-                <button id="slot1-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full mb-2">Book Slot</button>
-                <button id="slot1-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Booking</button>
+                <button id="slot1-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve Slot</button>
+                <button id="slot1-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Reservation</button>
             </div>
             <!-- Slot 2 -->
             <div class="slot bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Slot 2</h2>
                 <div id="slot2-status" class="status-box mb-4">Loading...</div>
-                <input type="text" id="slot2-datetime" class="datetime-picker w-full px-2 py-1 rounded-md mb-4" placeholder="Select Date & Time" />
-                <button id="slot2-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full mb-2">Book Slot</button>
-                <button id="slot2-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Booking</button>
+                <button id="slot2-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve Slot</button>
+                <button id="slot2-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Reservation</button>
             </div>
             <!-- Slot 3 -->
             <div class="slot bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Slot 3</h2>
                 <div id="slot3-status" class="status-box mb-4">Loading...</div>
-                <input type="text" id="slot3-datetime" class="datetime-picker w-full px-2 py-1 rounded-md mb-4" placeholder="Select Date & Time" />
-                <button id="slot3-book-btn" disabled class="bg-green-500 text-white py-2 px-4 rounded-md w-full mb-2">Book Slot</button>
-                <button id="slot3-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Booking</button>
+                <button id="slot3-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve Slot</button>
+                <button id="slot3-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Reservation</button>
             </div>
             <!-- Gate Status -->
             <div class="gate bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Gate</h2>
                 <div id="gate-status" class="status-box">Loading...</div>
             </div>
+        </div>
+
+        <!-- Reservation Form -->
+        <div id="reservation-form" class="mt-8 bg-gray-700 p-4 rounded-lg" style="display: none;">
+            <h2 class="text-xl text-white mb-4">Reservation Details</h2>
+            <form id="user-details-form" class="space-y-4">
+                <input type="text" id="user-name" placeholder="Your Name" required class="w-full p-2 rounded-md">
+                <input type="tel" id="user-phone" placeholder="Phone Number" required class="w-full p-2 rounded-md">
+                <input type="email" id="user-email" placeholder="Email Address" required class="w-full p-2 rounded-md">
+                <input type="text" id="reservation-datetime" placeholder="Select Date & Time" required class="w-full p-2 rounded-md">
+                <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md w-full">Confirm Reservation</button>
+            </form>
         </div>
     </div>
 
@@ -121,88 +98,84 @@
         firebase.initializeApp(firebaseConfig);
         var database = firebase.database();
 
-        // Helper function to update slot and booking button status
+        let currentSlot = null;
+
         function updateSlotAvailability(slotId, status) {
             const statusBox = document.getElementById(`${slotId}-status`);
-            const bookBtn = document.getElementById(`${slotId}-book-btn`);
+            const reserveBtn = document.getElementById(`${slotId}-reserve-btn`);
             const cancelBtn = document.getElementById(`${slotId}-cancel-btn`);
-            const datetimeInput = document.getElementById(`${slotId}-datetime`);
 
             statusBox.textContent = status;
 
             if (status.toLowerCase() === "free") {
                 statusBox.classList.add('free');
                 statusBox.classList.remove('occupied');
-                bookBtn.disabled = false;
+                reserveBtn.style.display = 'block';
                 cancelBtn.style.display = 'none';
-                datetimeInput.style.display = 'none';
-
-
-                bookBtn.addEventListener("click", function() {
-                    datetimeInput.style.display = 'block';
-                    flatpickr(`#${slotId}-datetime`, {
-                        enableTime: true,
-                        dateFormat: "Y-m-d H:i",
-                        minDate: "today",
-                        onChange: function(selectedDates, dateStr) {
-                            bookSlot(slotId, dateStr);
-                        }
-                    });
-                });
-
             } else {
                 statusBox.classList.add('occupied');
                 statusBox.classList.remove('free');
-                bookBtn.disabled = true;
-                datetimeInput.style.display = 'none';
+                reserveBtn.style.display = 'none';
                 cancelBtn.style.display = 'block';
-
-                cancelBtn.addEventListener("click", function() {
-                    cancelBooking(slotId);
-                });
             }
         }
 
-        function bookSlot(slotId, dateStr) {
-            const slotRef = database.ref(`parking_space/${slotId}/booking`);
-            slotRef.set({
-                date: dateStr,
-                status: "Booked"
+        function showReservationForm(slotId) {
+            currentSlot = slotId;
+            document.getElementById('reservation-form').style.display = 'block';
+            flatpickr("#reservation-datetime", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                minDate: "today"
             });
-            alert(`Slot ${slotId} booked for ${dateStr}`);
         }
 
-        function cancelBooking(slotId) {
-            const slotRef = database.ref(`parking_space/${slotId}/booking`);
-            slotRef.set({
-                date: null,
-                status: "free"
+        function cancelReservation(slotId) {
+            const slotRef = database.ref(`parking_space/${slotId}`);
+            slotRef.update({
+                status: "free",
+                reservation: null
             });
-            alert(`Slot ${slotId} booking has been canceled.`);
+            alert(`Reservation for ${slotId} has been canceled.`);
         }
 
-        database.ref("parking_space/slot1/status").on("value", function(snapshot) {
-            updateSlotAvailability("slot1", snapshot.val());
+        document.getElementById('user-details-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('user-name').value;
+            const phone = document.getElementById('user-phone').value;
+            const email = document.getElementById('user-email').value;
+            const datetime = document.getElementById('reservation-datetime').value;
+
+            const slotRef = database.ref(`parking_space/${currentSlot}`);
+            slotRef.update({
+                status: "reserved",
+                reservation: {
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    datetime: datetime
+                }
+            });
+
+            alert(`Slot ${currentSlot} reserved for ${datetime}`);
+            document.getElementById('reservation-form').style.display = 'none';
+            document.getElementById('user-details-form').reset();
         });
 
-        database.ref("parking_space/slot2/status").on("value", function(snapshot) {
-            updateSlotAvailability("slot2", snapshot.val());
-        });
+        ['slot1', 'slot2', 'slot3'].forEach(slotId => {
+            database.ref(`parking_space/${slotId}/status`).on("value", function(snapshot) {
+                updateSlotAvailability(slotId, snapshot.val());
+            });
 
-        database.ref("parking_space/slot3/status").on("value", function(snapshot) {
-            updateSlotAvailability("slot3", snapshot.val());
+            document.getElementById(`${slotId}-reserve-btn`).addEventListener('click', () => showReservationForm(slotId));
+            document.getElementById(`${slotId}-cancel-btn`).addEventListener('click', () => cancelReservation(slotId));
         });
 
         database.ref("parking_space/gate/status").on("value", function(snapshot) {
             const gateStatus = document.getElementById("gate-status");
             gateStatus.textContent = snapshot.val();
-            if (snapshot.val() === "Gate opened") {
-                gateStatus.classList.add("open");
-                gateStatus.classList.remove("closed");
-            } else {
-                gateStatus.classList.add("closed");
-                gateStatus.classList.remove("open");
-            }
+            gateStatus.classList.toggle("open", snapshot.val() === "Gate opened");
+            gateStatus.classList.toggle("closed", snapshot.val() !== "Gate opened");
         });
     </script>
 </body>
