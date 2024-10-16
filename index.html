@@ -159,10 +159,16 @@
             }
         }
 
-        // Show reservation form
+       // Show reservation form
         function showReservationForm(slot) {
             currentSlot = slot;
             document.getElementById('modal-overlay').classList.remove('hidden');
+            
+            // Reset form and update placeholders when opening the form
+            document.getElementById('user-details-form').reset();
+            const currentDateTime = getCurrentDateTime();
+            document.getElementById('reservation-date').setAttribute('placeholder', currentDateTime.date);
+            document.getElementById('reservation-time').setAttribute('placeholder', currentDateTime.time);
         }
 
         // Close reservation modal
@@ -259,7 +265,10 @@
      // Initialize date and time pickers
         flatpickr("#reservation-date", {
             minDate: "today",
-            dateFormat: "Y-m-d"
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            allowInput: true
         });
 
         flatpickr("#reservation-time", {
@@ -268,7 +277,8 @@
             dateFormat: "H:i",
             minTime: "09:00",
             maxTime: "22:00",
-            time_24hr: true
+            time_24hr: true,
+            allowInput: true
         });
 
         // Function to format the current date and time
@@ -286,10 +296,11 @@
             };
         }
 
-        // Set current date and time as default values
-        const currentDateTime = getCurrentDateTime();
-        document.getElementById('reservation-date').value = currentDateTime.date;
-        document.getElementById('reservation-time').value = currentDateTime.time;
+              const currentDateTime = getCurrentDateTime();
+        document.getElementById('reservation-date').setAttribute('placeholder', currentDateTime.date);
+        document.getElementById('reservation-time').setAttribute('placeholder', currentDateTime.time);
+
+
     </script>
 </body>
 </html>
