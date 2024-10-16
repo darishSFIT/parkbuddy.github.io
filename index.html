@@ -92,7 +92,8 @@
                 <input type="email" id="user-email" placeholder="Email Address" required class="w-full p-2 rounded-md bg-gray-700 text-white">
                 <input type="text" id="user-plate" placeholder="Number Plate" required class="w-full p-2 rounded-md bg-gray-700 text-white">
                 <input type="date" id="reservation-date" required class="w-full p-2 rounded-md bg-gray-700 text-white">
-                <input type="time" id="reservation-time" required class="w-full p-2 rounded-md bg-gray-700 text-white">
+                <input type="time" id="start-time" required class="w-full p-2 rounded-md bg-gray-700 text-white">
+                <input type="time" id="end-time" required class="w-full p-2 rounded-md bg-gray-700 text-white">
                 <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md w-full">Confirm Reservation</button>
             </form>
         </div>
@@ -193,19 +194,19 @@
             const userEmail = document.getElementById('user-email').value;
             const userPlate = document.getElementById('user-plate').value;
             const reservationDate = document.getElementById('reservation-date').value;
-            const reservationTime = document.getElementById('reservation-time').value;
-
+            const startTime = document.getElementById('start-time').value;
+            const endTime = document.getElementById('end-time').value;
+            const reservationStatus = "reserved";
             // Set the status to 'reserved' in Firebase
-            database.ref(`parking_space/${slotId}`).set({ // Fixed string interpolation
-                status: 'reserved',
-                user: {
-                    name: userName,
-                    phone: userPhone,
-                    email: userEmail,
-                    plate: userPlate,
-                    date: reservationDate,
-                    time: reservationTime
-                }
+            database.ref(`parking_space/${slotId}/reservation`).set({ // Fixed string interpolation
+                status: reservationStatus,
+                name: userName,
+                phone: userPhone,
+                email: userEmail,
+                plate: userPlate,
+                date: reservationDate,
+                time1: startTime,
+                time2: endTime
             }).then(() => {
                 updateSlotAvailability(slotId, 'reserved');
                 reservationModal.classList.add('hidden');
@@ -229,25 +230,60 @@
             const cancelEmail = document.getElementById('cancel-email').value;
 
             // Verify cancellation details and remove the reservation
-            database.ref(`parking_space/${slotId}/user`).once('value').then(snapshot => { // Fixed string interpolation
-                const userData = snapshot.val();
-                if (userData && userData.name === cancelName && userData.email === cancelEmail) {
-                    // Set the status back to free
-                    database.ref(`parking_space/${slotId}`).set({ // Fixed string interpolation
-                        status: 'free'
-                    }).then(() => {
-                        updateSlotAvailability(slotId, 'free');
-                        cancelModal.classList.add('hidden');
-                    }).catch(error => {
-                        console.error("Error cancelling reservation:", error);
-                    });
+            database.ref(`parking_space/${slotId}/reservation`).once('value').then(snapshot => {
+                const reservationData = snapshot.val();
+                console.log("Reservation Data:", reservationData); // Log the entire reservationData object
+
+                // Check if reservationData exists and compare name and email correctly
+                if (reservationData && reservationData.status === 'reserved') {
+                    if (reservationData.name === cancelName && reservationData.email === cancelEmail) {
+                        // Set the reservation status to 'free' without updating the slot status
+                        database.ref(`parking_space/${slotId}/reservation`).set({
+                            status: 'free' // Create a new reservation object
+                        }).then(() => {
+                            updateSlotAvailability(slotId, 'free'); // Update the UI accordingly
+                            cancelModal.classList.add('hidden');
+                        }).catch(error => {
+                            console.error("Error cancelling reservation:", error);
+                        });
+                    } else {
+                        alert("Cancellation details do not match.");
+                    }
                 } else {
-                    alert("Cancellation details do not match.");
+                    alert("No reservation found for this slot.");
                 }
             }).catch(error => {
                 console.error("Error verifying cancellation:", error);
             });
         });
+
+        // // Clear reservation function
+        // function clearReservation(slotId) {
+        //     const reservationRef = database.ref(`parking_space/${slotId}/reservation`);
+            
+        //     // Fetch the current reservation data
+        //     reservationRef.once('value').then(snapshot => {
+        //         const reservationData = snapshot.val();
+                
+        //         if (reservationData) {
+        //             // Create a new object with only the status field
+        //             const updatedReservation = {
+        //                 status: 'free' // Update status to 'free'
+        //             };
+
+        //             // Update the reservation with the new object
+        //             reservationRef.set(updatedReservation).then(() => {
+        //                 updateSlotAvailability(slotId, 'free'); // Update the UI accordingly
+        //             }).catch(error => {
+        //                 console.error("Error updating reservation status:", error);
+        //             });
+        //         } else {
+        //             console.log("No reservation found for this slot.");
+        //         }
+        //     }).catch(error => {
+        //         console.error("Error fetching reservation data:", error);
+        //     });
+        // }
     </script>
 </body>
 </html>
