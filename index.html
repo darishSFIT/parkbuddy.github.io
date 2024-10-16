@@ -22,9 +22,8 @@
         }
         .status-box.occupied { background-color: #e74c3c; }
         .status-box.free { background-color: #2ecc71; }
-        .status-box.open { background-color: #3498db; }
+        .status-box.reserved { background-color: #3498db; }
         .status-box.closed { background-color: #95a5a6; }
-        .datetime-picker { display: none; }
         button, .status-box, .slot, .gate {
             transition: 500ms;
         }
@@ -77,7 +76,9 @@
                 <input type="text" id="user-name" placeholder="Your Name" required class="w-full p-2 rounded-md">
                 <input type="tel" id="user-phone" placeholder="Phone Number" required class="w-full p-2 rounded-md">
                 <input type="email" id="user-email" placeholder="Email Address" required class="w-full p-2 rounded-md">
-                <input type="text" id="reservation-datetime" placeholder="Select Date & Time" required class="w-full p-2 rounded-md">
+                <input type="text" id="user-plate" placeholder="Number Plate" required class="w-full p-2 rounded-md">
+                <input type="date" id="reservation-date" required class="w-full p-2 rounded-md">
+                <input type="time" id="reservation-time" required class="w-full p-2 rounded-md">
                 <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md w-full">Confirm Reservation</button>
             </form>
         </div>
@@ -86,12 +87,12 @@
     <script>
         // Firebase configuration
         var firebaseConfig = {
-            apiKey: "AIzaSyAKwQcf9dQcRsRCj43MPBod1GBXz4xvtJ8",
-            authDomain: "parkbuddy-653a1.firebaseapp.com",
-            databaseURL: "https://parkbuddy-653a1-default-rtdb.firebaseio.com",
-            projectId: "parkbuddy-653a1",
-            storageBucket: "parkbuddy-653a1.appspot.com",
-            messagingSenderId: "171935755007",
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
             appId: "YOUR_APP_ID"
         };
         // Initialize Firebase
@@ -109,25 +110,25 @@
 
             if (status.toLowerCase() === "free") {
                 statusBox.classList.add('free');
-                statusBox.classList.remove('occupied');
+                statusBox.classList.remove('occupied', 'reserved');
                 reserveBtn.style.display = 'block';
                 cancelBtn.style.display = 'none';
-            } else {
-                statusBox.classList.add('occupied');
-                statusBox.classList.remove('free');
+            } else if (status.toLowerCase() === "reserved") {
+                statusBox.classList.add('reserved');
+                statusBox.classList.remove('free', 'occupied');
                 reserveBtn.style.display = 'none';
                 cancelBtn.style.display = 'block';
+            } else {
+                statusBox.classList.add('occupied');
+                statusBox.classList.remove('free', 'reserved');
+                reserveBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
             }
         }
 
         function showReservationForm(slotId) {
             currentSlot = slotId;
             document.getElementById('reservation-form').style.display = 'block';
-            flatpickr("#reservation-datetime", {
-                enableTime: true,
-                dateFormat: "Y-m-d H:i",
-                minDate: "today"
-            });
         }
 
         function cancelReservation(slotId) {
@@ -144,7 +145,9 @@
             const name = document.getElementById('user-name').value;
             const phone = document.getElementById('user-phone').value;
             const email = document.getElementById('user-email').value;
-            const datetime = document.getElementById('reservation-datetime').value;
+            const plate = document.getElementById('user-plate').value;
+            const date = document.getElementById('reservation-date').value;
+            const time = document.getElementById('reservation-time').value;
 
             const slotRef = database.ref(`parking_space/${currentSlot}`);
             slotRef.update({
@@ -153,29 +156,60 @@
                     name: name,
                     phone: phone,
                     email: email,
-                    datetime: datetime
+                    plate: plate,
+                    datetime: `${date} ${time}`
                 }
             });
 
-            alert(`Slot ${currentSlot} reserved for ${datetime}`);
+            alert(`Slot ${currentSlot} reserved for ${date} at ${time}`);
             document.getElementById('reservation-form').style.display = 'none';
             document.getElementById('user-details-form').reset();
         });
 
-        ['slot1', 'slot2', 'slot3'].forEach(slotId => {
-            database.ref(`parking_space/${slotId}/status`).on("value", function(snapshot) {
-                updateSlotAvailability(slotId, snapshot.val());
+        // Function to handle database errors
+        function handleDBError(error) {
+            console.error("Database error: ", error);
+            alert("Sorry, the database is down. Please try again later.");
+        }
+
+        // Listening for changes in slot availability
+        const slots = ["slot1", "slot2", "slot3"];
+        slots.forEach(slotId => {
+            const slotRef = database.ref(`parking_space/${slotId}`);
+            slotRef.on("value", function(snapshot) {
+                if (snapshot.exists()) {
+                    updateSlotAvailability(slotId, snapshot.val().status);
+                } else {
+                    handleDBError(new Error("Data not found"));
+                }
             });
 
             document.getElementById(`${slotId}-reserve-btn`).addEventListener('click', () => showReservationForm(slotId));
             document.getElementById(`${slotId}-cancel-btn`).addEventListener('click', () => cancelReservation(slotId));
         });
 
-        database.ref("parking_space/gate/status").on("value", function(snapshot) {
+        // Gate Status
+        const gateRef = database.ref("parking_space/gate/status");
+        gateRef.on("value", function(snapshot) {
             const gateStatus = document.getElementById("gate-status");
-            gateStatus.textContent = snapshot.val();
-            gateStatus.classList.toggle("open", snapshot.val() === "Gate opened");
-            gateStatus.classList.toggle("closed", snapshot.val() !== "Gate opened");
+            if (snapshot.exists()) {
+                gateStatus.textContent = snapshot.val();
+                gateStatus.classList.toggle("open", snapshot.val() === "Gate opened");
+                gateStatus.classList.toggle("closed", snapshot.val() !== "Gate opened");
+            } else {
+                handleDBError(new Error("Gate status not found"));
+            }
+        });
+
+        // Check for parked status and handle reservations
+        slots.forEach(slotId => {
+            database.ref(`parking_space/${slotId}/status`).on("value", function(snapshot) {
+                const status = snapshot.val();
+                if (status === "parked") {
+                    alert(`Slot ${slotId} has been parked. Reservation canceled.`);
+                    cancelReservation(slotId);
+                }
+            });
         });
     </script>
 </body>
