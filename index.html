@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,65 +15,32 @@
         body {
             background-color: #191919;
         }
-
         .status-box {
             padding: 10px;
             color: white;
             border-radius: 5px;
         }
-
-        .status-box.occupied {
-            background-color: #e74c3c;
-        }
-
-        .status-box.free {
-            background-color: #2ecc71;
-        }
-
-        .status-box.reserved {
-            background-color: #3498db;
-        }
-
-        .status-box.closed {
-            background-color: #95a5a6;
-        }
-
-        button,
-        .status-box,
-        .slot,
-        .gate {
+        .status-box.occupied { background-color: #e74c3c; }
+        .status-box.free { background-color: #2ecc71; }
+        .status-box.reserved { background-color: #3498db; }
+        .status-box.closed { background-color: #95a5a6; }
+        button, .status-box, .slot, .gate {
             transition: 500ms;
         }
-
-        button:hover,
-        .slot:hover,
-        .gate:hover {
+        button:hover, .slot:hover, .gate:hover {
             transform: scale(1.02);
             opacity: 0.8;
         }
-
-        .status-box:hover {
-            opacity: 0.8;
-        }
-
-        .slot:hover,
-        .gate:hover {
-            border-radius: 15px;
-        }
-
-        /* Modal Overlay */
+        .status-box:hover { opacity: 0.8; }
+        .slot:hover, .gate:hover { border-radius: 15px; }
+        /* Modal styling */
         #modal-overlay {
-            background-color: rgba(0, 0, 0, 0.6);
-        }
-
-        /* Hide Modal initially */
-        #reservation-modal {
-            display: none;
+            background-color: rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
-
 <body class="bg-gray-900 flex items-center justify-center min-h-screen p-4">
+
     <div class="container bg-gray-800 p-4 sm:p-8 rounded-lg shadow-lg w-full max-w-screen-lg">
         <h1 class="text-white text-2xl sm:text-3xl text-center font-bold mb-6">ParkBuddy🚗 Slot & Gate Status</h1>
 
@@ -83,28 +49,22 @@
             <div class="slot bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Slot 1</h2>
                 <div id="slot1-status" class="status-box mb-4">Loading...</div>
-                <button id="slot1-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve
-                    Slot</button>
-                <button id="slot1-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full"
-                    style="display: none;">Cancel Reservation</button>
+                <button id="slot1-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve Slot</button>
+                <button id="slot1-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Reservation</button>
             </div>
             <!-- Slot 2 -->
             <div class="slot bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Slot 2</h2>
                 <div id="slot2-status" class="status-box mb-4">Loading...</div>
-                <button id="slot2-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve
-                    Slot</button>
-                <button id="slot2-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full"
-                    style="display: none;">Cancel Reservation</button>
+                <button id="slot2-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve Slot</button>
+                <button id="slot2-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Reservation</button>
             </div>
             <!-- Slot 3 -->
             <div class="slot bg-gray-700 p-4 rounded-lg text-center">
                 <h2 class="text-xl text-white mb-4">Slot 3</h2>
                 <div id="slot3-status" class="status-box mb-4">Loading...</div>
-                <button id="slot3-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve
-                    Slot</button>
-                <button id="slot3-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full"
-                    style="display: none;">Cancel Reservation</button>
+                <button id="slot3-reserve-btn" class="bg-blue-500 text-white py-2 px-4 rounded-md w-full mb-2">Reserve Slot</button>
+                <button id="slot3-cancel-btn" class="bg-red-500 text-white py-2 px-4 rounded-md w-full" style="display: none;">Cancel Reservation</button>
             </div>
             <!-- Gate Status -->
             <div class="gate bg-gray-700 p-4 rounded-lg text-center">
@@ -112,42 +72,34 @@
                 <div id="gate-status" class="status-box">Loading...</div>
             </div>
         </div>
+    </div>
 
-        <!-- Modal Overlay -->
-        <div id="modal-overlay"
-            class="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 hidden bg-opacity-50">
-            <!-- Reservation Modal -->
-            <div id="reservation-modal" class="bg-gray-800 rounded-lg p-6 relative w-full max-w-md">
-                <button id="close-modal-btn" class="absolute top-2 right-2 text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 hidden bg-opacity-50">
+        <!-- Reservation Modal -->
+        <div id="reservation-modal" class="bg-gray-800 rounded-lg p-6 relative w-full max-w-md">
+            <button id="close-modal-btn" class="absolute top-2 right-2 text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
 
-                <h2 class="text-xl text-white mb-4">Reservation Details</h2>
-                <form id="user-details-form" class="space-y-4">
-                    <input type="text" id="user-name" placeholder="Your Name" required
-                        class="w-full p-2 rounded-md bg-gray-700 text-white">
-                    <input type="tel" id="user-phone" placeholder="Phone Number" required
-                        class="w-full p-2 rounded-md bg-gray-700 text-white">
-                    <input type="email" id="user-email" placeholder="Email Address" required
-                        class="w-full p-2 rounded-md bg-gray-700 text-white">
-                    <input type="text" id="user-plate" placeholder="Number Plate" required
-                        class="w-full p-2 rounded-md bg-gray-700 text-white">
-                    <input type="date" id="reservation-date" required class="w-full p-2 rounded-md bg-gray-700 text-white">
-                    <input type="time" id="reservation-time" required class="w-full p-2 rounded-md bg-gray-700 text-white">
-                    <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md w-full">Confirm
-                        Reservation</button>
-                </form>
-            </div>
+            <h2 class="text-xl text-white mb-4">Reservation Details</h2>
+            <form id="user-details-form" class="space-y-4">
+                <input type="text" id="user-name" placeholder="Your Name" required class="w-full p-2 rounded-md bg-gray-700 text-white">
+                <input type="tel" id="user-phone" placeholder="Phone Number" required class="w-full p-2 rounded-md bg-gray-700 text-white">
+                <input type="email" id="user-email" placeholder="Email Address" required class="w-full p-2 rounded-md bg-gray-700 text-white">
+                <input type="text" id="user-plate" placeholder="Number Plate" required class="w-full p-2 rounded-md bg-gray-700 text-white">
+                <input type="date" id="reservation-date" required class="w-full p-2 rounded-md bg-gray-700 text-white">
+                <input type="time" id="reservation-time" required class="w-full p-2 rounded-md bg-gray-700 text-white">
+                <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md w-full">Confirm Reservation</button>
+            </form>
         </div>
     </div>
 
     <script>
-        // Firebase configuration (replace with your own configuration)
-        var firebaseConfig = {
+        // Firebase configuration
+       var firebaseConfig = {
             apiKey: "AIzaSyAKwQcf9dQcRsRCj43MPBod1GBXz4xvtJ8",
             authDomain: "parkbuddy-653a1.firebaseapp.com",
             databaseURL: "https://parkbuddy-653a1-default-rtdb.firebaseio.com",
@@ -190,90 +142,71 @@
         // Show reservation form as a modal
         function showReservationForm(slotId) {
             currentSlot = slotId;
+            // Make the modal visible by removing 'hidden' class
             document.getElementById('modal-overlay').classList.remove('hidden');
         }
 
         // Close reservation form
         function closeReservationForm() {
+            // Hide the modal by adding 'hidden' class
             document.getElementById('modal-overlay').classList.add('hidden');
         }
 
-        function cancelReservation(slotId) {
-            const slotRef = database.ref(`slots/${slotId}`);
-            slotRef.update({
-                status: "free"
-            });
-        }
+        // Event listener for close button
+        document.getElementById("close-modal-btn").addEventListener("click", closeReservationForm);
 
-        // Event listeners for slots
-        document.getElementById("slot1-reserve-btn").addEventListener("click", function () {
-            showReservationForm("slot1");
+        document.getElementById('user-details-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const name = document.getElementById('user-name').value;
+            const phone = document.getElementById('user-phone').value;
+            const email = document.getElementById('user-email').value;
+            const plate = document.getElementById('user-plate').value;
+            const date = document.getElementById('reservation-date').value;
+            const time = document.getElementById('reservation-time').value;
+
+            const reservationDetails = {
+                name, phone, email, plate, date, time
+            };
+
+            // Save the reservation details to Firebase
+            database.ref(`reservations/${currentSlot}`).set(reservationDetails);
+
+            // Update slot status to "reserved"
+            database.ref(`slots/${currentSlot}`).set("reserved");
+
+            closeReservationForm();
         });
 
-        document.getElementById("slot1-cancel-btn").addEventListener("click", function () {
-            cancelReservation("slot1");
+        // Fetch the slots and gate status
+        database.ref("slots/slot1").on("value", function(snapshot) {
+            updateSlotAvailability('slot1', snapshot.val());
+        });
+
+        database.ref("slots/slot2").on("value", function(snapshot) {
+            updateSlotAvailability('slot2', snapshot.val());
+        });
+
+        database.ref("slots/slot3").on("value", function(snapshot) {
+            updateSlotAvailability('slot3', snapshot.val());
+        });
+
+        database.ref("gate").on("value", function(snapshot) {
+            document.getElementById('gate-status').textContent = snapshot.val();
+        });
+
+        // Event listener for reservation buttons
+        document.getElementById("slot1-reserve-btn").addEventListener("click", function () {
+            showReservationForm("slot1");
         });
 
         document.getElementById("slot2-reserve-btn").addEventListener("click", function () {
             showReservationForm("slot2");
         });
 
-        document.getElementById("slot2-cancel-btn").addEventListener("click", function () {
-            cancelReservation("slot2");
-        });
-
         document.getElementById("slot3-reserve-btn").addEventListener("click", function () {
             showReservationForm("slot3");
         });
 
-        document.getElementById("slot3-cancel-btn").addEventListener("click", function () {
-            cancelReservation("slot3");
-        });
-
-        document.getElementById("close-modal-btn").addEventListener("click", closeReservationForm);
-
-        document.getElementById("user-details-form").addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            const name = document.getElementById("user-name").value;
-            const phone = document.getElementById("user-phone").value;
-            const email = document.getElementById("user-email").value;
-            const plate = document.getElementById("user-plate").value;
-            const date = document.getElementById("reservation-date").value;
-            const time = document.getElementById("reservation-time").value;
-
-            const slotRef = database.ref(`slots/${currentSlot}`);
-            slotRef.update({
-                status: "reserved",
-                reservedBy: {
-                    name,
-                    phone,
-                    email,
-                    plate,
-                    date,
-                    time
-                }
-            });
-
-            closeReservationForm();
-        });
-
-        // Firebase listeners for real-time updates
-        database.ref("slots/slot1/status").on("value", function (snapshot) {
-            const status = snapshot.val();
-            updateSlotAvailability("slot1", status);
-        });
-
-        database.ref("slots/slot2/status").on("value", function (snapshot) {
-            const status = snapshot.val();
-            updateSlotAvailability("slot2", status);
-        });
-
-        database.ref("slots/slot3/status").on("value", function (snapshot) {
-            const status = snapshot.val();
-            updateSlotAvailability("slot3", status);
-        });
     </script>
 </body>
-
 </html>
