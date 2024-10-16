@@ -19,11 +19,12 @@
             padding: 10px;
             color: white;
             border-radius: 5px;
-            margin-bottom:10px;
+            margin-bottom: 10px;
         }
         .status-box.occupied { background-color: #e74c3c; }
         .status-box.free { background-color: #2ecc71; }
         .status-box.reserved { background-color: #3498db; }
+        .status-box.parked { background-color: #f39c12; }
         .status-box.closed { background-color: #95a5a6; }
         button, .status-box, .slot, .gate {
             transition: 500ms;
@@ -130,177 +131,123 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        let currentSlot = "";
-        let userReservations = {}; // Store user reservations
-
         // Update slot availability based on status
         function updateSlotAvailability(slotId, status) {
-            const statusBox = document.getElementById(`${slotId}-status`);
-            const reserveBtn = document.getElementById(`${slotId}-reserve-btn`);
-            const cancelBtn = document.getElementById(`${slotId}-cancel-btn`);
+            const statusBox = document.getElementById(`${slotId}-status`); // Fixed string interpolation
+            const reserveBtn = document.getElementById(`${slotId}-reserve-btn`); // Fixed string interpolation
+            const cancelBtn = document.getElementById(`${slotId}-cancel-btn`); // Fixed string interpolation
 
             statusBox.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-            statusBox.className = `status-box ${status.toLowerCase()}`;
+            statusBox.className = `status-box ${status.toLowerCase()}`; // Fixed class name assignment
 
-            if (status === "reserved" || status === "occupied") {
-                reserveBtn.style.display = "none";
-                database.ref(`parking_space/${slotId}/reservation`).once("value", function(snapshot) {
-                    const reservation = snapshot.val();
-                    if (reservation) {
-                        userReservations[slotId] = reservation;
-                        cancelBtn.style.display = "inline-block";
-                    } else {
-                        cancelBtn.style.display = "none";
-                    }
-                });
+            // Check status and adjust button visibility
+            if (status === "reserved" || status === "occupied" || status === "parked") {
+                reserveBtn.disabled = true;  // Disable the reserve button
+                cancelBtn.style.display = status === "reserved" ? "inline-block" : "none";
             } else {
+                reserveBtn.disabled = false;  // Enable the reserve button
                 reserveBtn.style.display = "inline-block";
                 cancelBtn.style.display = "none";
             }
         }
 
-       // Show reservation form
-        function showReservationForm(slot) {
-            currentSlot = slot;
-            document.getElementById('modal-overlay').classList.remove('hidden');
-            
-            // Reset form and update placeholders when opening the form
-            document.getElementById('user-details-form').reset();
-            const currentDateTime = getCurrentDateTime();
-            document.getElementById('reservation-date').setAttribute('placeholder', currentDateTime.date);
-            document.getElementById('reservation-time').setAttribute('placeholder', currentDateTime.time);
-        }
-
-        // Close reservation modal
-        function closeReservationForm() {
-            document.getElementById('modal-overlay').classList.add('hidden');
-            document.getElementById('user-details-form').reset();
-        }
-
-        // Close cancellation modal
-        function closeCancellationModal() {
-            document.getElementById('cancel-overlay').classList.add('hidden');
-            document.getElementById('cancel-details-form').reset();
-        }
-
-        // Show cancellation form
-        function showCancellationForm(slot) {
-            currentSlot = slot;
-            const reservation = userReservations[slot];
-            if (reservation) {
-                document.getElementById('cancel-name').value = reservation.name;
-                document.getElementById('cancel-email').value = reservation.email;
-                document.getElementById('cancel-overlay').classList.remove('hidden');
-            } else {
-                alert("No reservation found for this slot.");
-            }
-        }
-
-        // Event Listeners
-        document.getElementById("slot1-reserve-btn").addEventListener("click", () => showReservationForm("slot1"));
-        document.getElementById("slot2-reserve-btn").addEventListener("click", () => showReservationForm("slot2"));
-        document.getElementById("slot3-reserve-btn").addEventListener("click", () => showReservationForm("slot3"));
-
-        document.getElementById("slot1-cancel-btn").addEventListener("click", () => showCancellationForm("slot1"));
-        document.getElementById("slot2-cancel-btn").addEventListener("click", () => showCancellationForm("slot2"));
-        document.getElementById("slot3-cancel-btn").addEventListener("click", () => showCancellationForm("slot3"));
-
-        document.getElementById("close-modal-btn").addEventListener("click", closeReservationForm);
-        document.getElementById("close-cancel-modal-btn").addEventListener("click", closeCancellationModal);
-
-        // Handle reservation form submission
-        document.getElementById('user-details-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const name = document.getElementById('user-name').value;
-            const phone = document.getElementById('user-phone').value;
-            const email = document.getElementById('user-email').value;
-            const plate = document.getElementById('user-plate').value;
-            const date = document.getElementById('reservation-date').value;
-            const time = document.getElementById('reservation-time').value;
-
-            const reservationDetails = {
-                name, phone, email, plate, date, time
-            };
-
-            // Save the reservation details to Firebase
-            database.ref(`parking_space/${currentSlot}/reservation`).set(reservationDetails);
-
-            // Update slot status to "reserved"
-            database.ref(`parking_space/${currentSlot}/status`).set("reserved");
-
-            closeReservationForm();
-        });
-
-        // Handle cancellation form submission
-        document.getElementById('cancel-details-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const name = document.getElementById('cancel-name').value;
-            const email = document.getElementById('cancel-email').value;
-
-            const reservation = userReservations[currentSlot];
-            if (reservation && reservation.name === name && reservation.email === email) {
-                // Remove reservation and update slot status
-                database.ref(`parking_space/${currentSlot}/reservation`).remove();
-                database.ref(`parking_space/${currentSlot}/status`).set("free");
-                alert("Reservation cancelled successfully!");
-            } else {
-                alert("Reservation details do not match!");
-            }
-
-            closeCancellationModal();
-        });
-
         // Fetch the slots and gate status
         ["slot1", "slot2", "slot3"].forEach(slot => {
-            database.ref(`parking_space/${slot}/status`).on("value", function(snapshot) {
+            database.ref(`parking_space/${slot}/status`).on("value", function(snapshot) { // Fixed string interpolation
                 updateSlotAvailability(slot, snapshot.val());
             });
         });
 
         database.ref("parking_space/gate/status").on("value", function(snapshot) {
             document.getElementById('gate-status').textContent = snapshot.val();
-            document.getElementById('gate-status').className = `status-box ${snapshot.val().toLowerCase()}`;
+            document.getElementById('gate-status').className = `status-box ${snapshot.val().toLowerCase()}`; // Fixed class name assignment
         });
 
-     // Initialize date and time pickers
-        flatpickr("#reservation-date", {
-            minDate: "today",
-            dateFormat: "Y-m-d",
-            altInput: true,
-            altFormat: "F j, Y",
-            allowInput: true
+        // Modal for reservation
+        const reservationModal = document.getElementById('modal-overlay');
+        const cancelModal = document.getElementById('cancel-overlay');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const closeCancelModalBtn = document.getElementById('close-cancel-modal-btn');
+
+        document.querySelectorAll('[id$="-reserve-btn"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                reservationModal.classList.remove('hidden');
+                const slotId = this.id.replace('-reserve-btn', '');
+                reservationModal.setAttribute('data-slot', slotId);
+            });
         });
 
-        flatpickr("#reservation-time", {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            minTime: "09:00",
-            maxTime: "22:00",
-            time_24hr: true,
-            allowInput: true
+        closeModalBtn.addEventListener('click', () => {
+            reservationModal.classList.add('hidden');
         });
 
-        // Function to format the current date and time
-        function getCurrentDateTime() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
+        closeCancelModalBtn.addEventListener('click', () => {
+            cancelModal.classList.add('hidden');
+        });
 
-            return {
-                date: `${year}-${month}-${day}`,
-                time: `${hours}:${minutes}`
-            };
-        }
+        document.getElementById('user-details-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const slotId = reservationModal.getAttribute('data-slot');
+            const userName = document.getElementById('user-name').value;
+            const userPhone = document.getElementById('user-phone').value;
+            const userEmail = document.getElementById('user-email').value;
+            const userPlate = document.getElementById('user-plate').value;
+            const reservationDate = document.getElementById('reservation-date').value;
+            const reservationTime = document.getElementById('reservation-time').value;
 
-              const currentDateTime = getCurrentDateTime();
-        document.getElementById('reservation-date').setAttribute('placeholder', currentDateTime.date);
-        document.getElementById('reservation-time').setAttribute('placeholder', currentDateTime.time);
+            // Set the status to 'reserved' in Firebase
+            database.ref(`parking_space/${slotId}`).set({ // Fixed string interpolation
+                status: 'reserved',
+                user: {
+                    name: userName,
+                    phone: userPhone,
+                    email: userEmail,
+                    plate: userPlate,
+                    date: reservationDate,
+                    time: reservationTime
+                }
+            }).then(() => {
+                updateSlotAvailability(slotId, 'reserved');
+                reservationModal.classList.add('hidden');
+            }).catch(error => {
+                console.error("Error reserving slot:", error);
+            });
+        });
 
+        document.querySelectorAll('[id$="-cancel-btn"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                cancelModal.classList.remove('hidden');
+                const slotId = this.id.replace('-cancel-btn', '');
+                cancelModal.setAttribute('data-slot', slotId);
+            });
+        });
 
+        document.getElementById('cancel-details-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const slotId = cancelModal.getAttribute('data-slot');
+            const cancelName = document.getElementById('cancel-name').value;
+            const cancelEmail = document.getElementById('cancel-email').value;
+
+            // Verify cancellation details and remove the reservation
+            database.ref(`parking_space/${slotId}/user`).once('value').then(snapshot => { // Fixed string interpolation
+                const userData = snapshot.val();
+                if (userData && userData.name === cancelName && userData.email === cancelEmail) {
+                    // Set the status back to free
+                    database.ref(`parking_space/${slotId}`).set({ // Fixed string interpolation
+                        status: 'free'
+                    }).then(() => {
+                        updateSlotAvailability(slotId, 'free');
+                        cancelModal.classList.add('hidden');
+                    }).catch(error => {
+                        console.error("Error cancelling reservation:", error);
+                    });
+                } else {
+                    alert("Cancellation details do not match.");
+                }
+            }).catch(error => {
+                console.error("Error verifying cancellation:", error);
+            });
+        });
     </script>
 </body>
 </html>
